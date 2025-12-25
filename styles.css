@@ -152,7 +152,7 @@ body {
        So top: -140px was relative to what?
        Let's use bottom of the border area.
     */
-    top: -120px;
+    top: -40px;
     /* Guessing based on triangle geometry */
     left: -40px;
     /* Center horizontally */
@@ -173,8 +173,8 @@ body {
 }
 
 .wax-seal::after {
-    content: "SC";
-    /* Santa Claus */
+    content: "Fer";
+    /* Santa Claus -> Fer */
     border: 2px dashed rgba(92, 64, 51, 0.5);
     width: 60px;
     height: 60px;
@@ -638,6 +638,14 @@ p {
     }
 }
 
+.signature-img {
+    width: 120px;
+    height: auto;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
 /* --- Responsive Design --- */
 @keyframes fadeIn {
     from {
@@ -719,14 +727,42 @@ p {
         right: -10px;
     }
 
-    /* Paper message text adjustment */
+    /* Paper message text adjustment - Scaled Up */
     .paper-message h2 {
-        font-size: 1.5rem;
+        font-size: 2rem;
+        /* Was 1.5rem */
     }
 
     .paper-message p {
-        font-size: 1rem;
+        font-size: 1.2rem;
+        /* Was 1rem */
     }
+}
+
+/* Logo on Envelope Flap */
+.envelope-logo {
+    position: absolute;
+    /* The flap top creates a downward pointing triangle using border-top: 220px. 
+       The 'content area' starts at top:0. 
+       The tip of the triangle is at Y=220px.
+       The seal is at top: -120px relative to something? 
+       Actually, if border-top is 220px, usually content is pushed down? 
+       No, border TOP sits ABOVE the content box. 
+       So the content box is at y=220px? 
+       Let's assume the coordinate 0,0 is the top-left of the wrapper. 
+       We want to position relative to the flap.
+       Let's try positioning it absolute "on top" of the border area.
+    */
+    top: 20px;
+    /* Lower down */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 190px;
+    /* Larger size */
+    height: auto;
+    z-index: 50;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+    pointer-events: none;
 }
 
 /* Background Video */

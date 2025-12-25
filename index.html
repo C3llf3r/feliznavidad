@@ -93,6 +93,7 @@
                 <div class="flap bottom"></div>
                 <div class="flap top">
                     <div class="wax-seal"></div>
+                    <img src="img/nero.png" class="envelope-logo" alt="Logo">
                 </div>
             </div>
         </div>
@@ -101,7 +102,7 @@
     <!-- Welcome Modal -->
     <div id="welcomeModal" class="modal-overlay">
         <div class="modal-content glass-effect">
-            <h2 class="festive-title">¡Bienvenido, Amigo Secreto!</h2>
+            <h2 class="festive-title">¡Bienvenido, ingresa tu nombre!</h2>
             <div class="input-group">
                 <input type="text" id="secretFriendName" placeholder="Tu nombre aquí..." class="festive-input">
                 <button onclick="closeModal()" class="festive-button">Entrar</button>
@@ -259,9 +260,35 @@
 
             // 1. Prepare Content
             const nameToUse = currentUserName || "Amigo";
+
+            // Gender Detection Logic
+            function getGenderEmoji(name) {
+                const lowerName = name.toLowerCase().trim();
+                const maleNames = ["jose", "juan", "carlos", "luis", "pedro", "miguel", "angel", "francisco", "jorge", "fernando", "daniel", "david", "javier", "alejandro", "manuel", "jesús", "antonio", "nerito", "fer", "neritofer"];
+                const femaleNames = ["maria", "ana", "carmen", "laura", "isabel", "lucia", "marta", "elena", "sara", "julia", "paula", "andrea", "rocio", "patricia", "claudia", "sofia", "camila", "valentina"];
+
+                // 1. Check direct list match
+                if (maleNames.includes(lowerName)) return " 🫂 Un fuerte abrazo.";
+                if (femaleNames.includes(lowerName)) return " 😘 Un beso.";
+
+                // 2. Simple Heuristic for Spanish names
+                // Ends in 'a' is likely female (with exceptions dealt above or ignored for simplicity)
+                // Ends in 'o', 'e', consonant often male
+                if (lowerName.endsWith('a')) {
+                    return " 😘 Un beso.";
+                } else {
+                    return " 🫂 Un fuerte abrazo.";
+                }
+            }
+
+            const emojiSuffix = getGenderEmoji(nameToUse);
+
             // Select random message
             const rawMsg = xmasMessages[Math.floor(Math.random() * xmasMessages.length)];
-            const finalMsg = rawMsg.replace("[NOMBRE_USUARIO]", nameToUse);
+            let finalMsg = rawMsg.replace("[NOMBRE_USUARIO]", nameToUse);
+
+            // Add the gender-based suffix
+            finalMsg += emojiSuffix;
 
             title.innerText = `¡Hola, ${nameToUse}!`;
             body.innerHTML = ""; // Clear for typewriter
