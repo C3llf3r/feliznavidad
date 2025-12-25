@@ -1,0 +1,749 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, #02112e 0%, #1a3c6e 50%, #f0f8ff 100%);
+    font-family: 'Great Vibes', cursive;
+    overflow: hidden;
+    /* Essential for 3D envelope effect moved to wrapper */
+    overflow: hidden;
+    width: 100vw;
+}
+
+/* --- Envelope Styles --- */
+.envelope-wrapper {
+    position: relative;
+    width: 640px;
+    height: 440px;
+    cursor: pointer;
+    transition: transform 0.5s;
+    z-index: 50;
+    transform-style: preserve-3d;
+    pointer-events: auto;
+    /* Ensure clickable even if container is none */
+}
+
+.envelope-wrapper:hover {
+    transform: translateY(-5px);
+}
+
+.envelope {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+/* Inside Back of Envelope */
+.envelope-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #8a0009;
+    /* Darker red inside */
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+/* Common Flap Styles */
+.flap {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 40;
+    /* Above card */
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Backface visibility ensures we see the 'back' of the flap when opened, usually lighter or same color */
+}
+
+/* Flap Geometry: Meeting completely in center 320x220 */
+
+.flap.top {
+    top: 0;
+    left: 0;
+    border-top: 220px solid #ba0011;
+    /* Top External Color */
+    border-left: 320px solid transparent;
+    border-right: 320px solid transparent;
+    transform-origin: top;
+    z-index: 44;
+    /* Top most */
+}
+
+.flap.right {
+    top: 0;
+    right: 0;
+    border-right: 320px solid #a8000f;
+    /* Slightly darker to simulate light source */
+    border-top: 220px solid transparent;
+    border-bottom: 220px solid transparent;
+    transform-origin: right;
+    z-index: 42;
+}
+
+.flap.bottom {
+    bottom: 0;
+    left: 0;
+    border-bottom: 220px solid #b30010;
+    border-left: 320px solid transparent;
+    border-right: 320px solid transparent;
+    transform-origin: bottom;
+    z-index: 43;
+}
+
+.flap.left {
+    top: 0;
+    left: 0;
+    border-left: 320px solid #a8000f;
+    border-top: 220px solid transparent;
+    border-bottom: 220px solid transparent;
+    transform-origin: left;
+    z-index: 42;
+}
+
+/* Open Animation */
+.envelope-wrapper.open .flap.top {
+    transform: rotateX(180deg);
+    transition-delay: 0s;
+}
+
+.envelope-wrapper.open .flap.right {
+    transform: rotateY(180deg);
+    transition-delay: 0.2s;
+}
+
+.envelope-wrapper.open .flap.bottom {
+    transform: rotateX(-180deg);
+    transition-delay: 0s;
+}
+
+.envelope-wrapper.open .flap.left {
+    transform: rotateY(-180deg);
+    transition-delay: 0.2s;
+}
+
+/* The Card */
+
+
+/* Wax Seal on Top Flap */
+.wax-seal {
+    position: absolute;
+    /* The flap has 0 content size. The border-top creates the visual area upward from content-box? 
+       No, border-top goes DOWN into the element space usually, but here... 
+       Wait, for 'border-top' to form a downward pointing triangle (which top flap is), 
+       it's actually 'border-top' + 'border-left/right transparent'. 
+       So the content box is at the top edge. The triangle points down.
+       We need to position negative TOP to go up? No, the triangle is INSIDE the box boundaries defined by borders?
+       Actually, standard CSS triangle: 
+       border-top: 220px solid red; -> creates trapezoid/triangle pointing DOWN.
+       Content box is 0. 
+       We want seal at the 'tip' of the triangle, which is at the BOTTOM of the border-top area.
+       So top: -110px? 
+       Actually, let's just position absolute relative to the flap.
+       Top flap tip is at 220px down from top edge.
+       So top: -140px was relative to what?
+       Let's use bottom of the border area.
+    */
+    top: -120px;
+    /* Guessing based on triangle geometry */
+    left: -40px;
+    /* Center horizontally */
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #5c4033;
+    font-weight: bold;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+    transform: none;
+    margin: 0;
+}
+
+.wax-seal::after {
+    content: "SC";
+    /* Santa Claus */
+    border: 2px dashed rgba(92, 64, 51, 0.5);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Card (Letter) Updates to fit in Envelope --- */
+.card-container {
+    position: absolute;
+    /* Manual centering to avoid 3D transform conflicts on mobile:
+       Envelope: 640x440. Card: 580x400.
+       Top/Bottom Margin: (440-400)/2 = 20px
+       Left/Right Margin: (640-580)/2 = 30px
+    */
+    top: 20px;
+    left: 30px;
+    width: 580px;
+    height: 400px;
+
+    transform: none;
+    /* Reset transform */
+
+    background: #fff;
+    /* Paper background */
+    z-index: 20;
+    transition: transform 1s 0.5s;
+    /* Pop out delay */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* Clip contents to card size */
+}
+
+/* Card Animation: Pop Up when Open */
+/* Card Animation: Pop Up when Open - Removed translation as requested */
+.envelope-wrapper.open .card-container {
+    /* transform: translateY(-100px); REMOVED */
+    z-index: 25;
+    /* Ensure it stays above flaps slightly if needed, though they open */
+}
+
+
+
+.content h1 {
+    font-size: 3.5rem;
+}
+
+.content p {
+    font-size: 1.8rem;
+}
+
+.decoration {
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Floating outside */
+.snowflake {
+    z-index: 100;
+}
+
+/* --- Existing Styles (Preserved) --- */
+
+/* Lights */
+.lights-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.light {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    box-shadow: 0 0 10px 2px #ff0000;
+    animation: flash 1.5s infinite alternate ease-in-out, color-cycle 4s infinite linear;
+}
+
+/* Corner Decorations */
+.decoration {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.top-left {
+    left: 0;
+}
+
+.top-right {
+    right: 0;
+    transform: scaleX(-1);
+}
+
+.christmas-icon {
+    position: absolute;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+}
+
+.star-gold,
+.star-red,
+.star-white {
+    animation: twinkle 2s infinite alternate ease-in-out;
+}
+
+.snowflake-white,
+.snowflake-green {
+    animation: spin-sway 6s infinite ease-in-out;
+}
+
+/* Snow Effect */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    background-color: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+    /* Ensure snow is on top of everything now */
+}
+
+/* Animations */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #fff;
+    }
+
+    to {
+        text-shadow: 0 0 20px #fff;
+    }
+}
+
+@keyframes flash {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+}
+
+@keyframes color-cycle {
+    0% {
+        background-color: #ff0000;
+        box-shadow: 0 0 10px 2px #ff0000;
+    }
+
+    33% {
+        background-color: #ffd700;
+        box-shadow: 0 0 10px 2px #ffd700;
+    }
+
+    66% {
+        background-color: #2ecc71;
+        box-shadow: 0 0 10px 2px #2ecc71;
+    }
+
+    100% {
+        background-color: #ff0000;
+        box-shadow: 0 0 10px 2px #ff0000;
+    }
+}
+
+@keyframes twinkle {
+    0% {
+        transform: scale(0.9) rotate(0deg);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1.1) rotate(15deg);
+        opacity: 1;
+    }
+}
+
+@keyframes spin-sway {
+    0% {
+        transform: rotate(0deg) translateY(0);
+    }
+
+    50% {
+        transform: rotate(180deg) translateY(5px);
+    }
+
+    100% {
+        transform: rotate(360deg) translateY(0);
+    }
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(110vh);
+        opacity: 0;
+    }
+}
+
+h1,
+p {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+    margin: 0;
+    color: #1a3c6e;
+    /* Dark blue text on white card looks better? Or revert to white if invalid. 
+                     The original card was transparent/dark. 
+                     If card background is white, text should be dark. 
+                     If card background is "night sky", text white.
+                     Let's keep the card content as "Night Sky" inside white envelope?
+                     User said: "envelope ... red and gold".
+                     Inside: "Web page basic... night blue bg".
+                     So the CARD should keep its night blue bg. */
+}
+
+/* Restore Card Internal Look */
+.card-container {
+    background: linear-gradient(to bottom, #02112e 0%, #1a3c6e 100%);
+    border: 2px solid #d4af37;
+    /* Gold rim for the card */
+}
+
+.content h1,
+.content p {
+    color: #fff;
+    /* Keep text white */
+}
+
+/* --- Welcome Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(2, 17, 46, 0.85);
+    /* Dark festive overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    /* Above everything */
+    transition: opacity 0.5s ease-in-out;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    /* Subtle gold border */
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: scale(1);
+    animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 90%;
+    width: 400px;
+}
+
+.glass-effect {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+.festive-title {
+    color: #ffd700;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-weight: normal;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.festive-input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ba0011;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-family: 'Great Vibes', cursive;
+    /* Keeping theme font */
+    font-size: 1.5rem;
+    color: #1a3c6e;
+    text-align: center;
+    outline: none;
+    width: 80%;
+    transition: all 0.3s ease;
+}
+
+.festive-input:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    border-color: #ffd700;
+}
+
+.festive-input::placeholder {
+    color: #888;
+    font-family: sans-serif;
+    /* Readable placeholder */
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.festive-button {
+    background: linear-gradient(135deg, #ba0011 0%, #ff4444 100%);
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 50px;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(186, 0, 17, 0.4);
+    margin-top: 10px;
+}
+
+.festive-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(186, 0, 17, 0.6);
+    background: linear-gradient(135deg, #d40013 0%, #ff6666 100%);
+}
+
+.festive-button:active {
+    transform: translateY(1px);
+}
+
+@keyframes modalPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Secret Message (Parchment) Styles --- */
+.paper-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    height: 75%;
+    background-color: #fdf6e3;
+    /* Creamy parchment base */
+    /* Subtle paper texture using gradients */
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 0, 0, 0.03) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 0, 0, 0.03) 0%, transparent 20%);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    z-index: 30;
+    /* sit on top of card content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    transition: opacity 0.5s ease;
+}
+
+.paper-inner-border {
+    width: 100%;
+    height: 100%;
+    border: 3px double #8a6d3b;
+    /* Brownish gold decorative border */
+    outline: 2px dashed #8a6d3b;
+    outline-offset: -10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Override general text styles for the paper message */
+.paper-message h2 {
+    color: #5c4033;
+    /* Dark brown ink */
+    font-size: 3rem;
+    margin: 0 0 15px 0;
+    text-shadow: none;
+    font-family: 'Great Vibes', cursive;
+}
+
+.paper-message p {
+    color: #4a3b2a;
+    font-size: 1.8rem;
+    text-shadow: none;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    font-family: 'Great Vibes', cursive;
+}
+
+/* Close Message Button */
+.close-msg-btn {
+    background: transparent;
+    border: 2px solid #5c4033;
+    color: #5c4033;
+    padding: 8px 20px;
+    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.close-msg-btn:hover {
+    background: #5c4033;
+    color: #fdf6e3;
+}
+
+/* Fade In Animation for Button */
+.fade-in {
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- Responsive Design --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- Container for 3D Context --- */
+.perspective-container {
+    width: 640px;
+    height: 440px;
+    perspective: 1500px;
+    /* Perspective lives here on the unscaled wrapper size */
+    position: relative;
+    z-index: 50;
+    pointer-events: none;
+    /* Let clicks pass through if needed, but wrapper catches them */
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+
+    /* Scale the entire 3D scene container. 
+       We leave the envelope-wrapper at 100% size inside this container.
+       This prevents double-scaling and ensures perspective calculations match the visual scale.
+    */
+    .perspective-container {
+        transform: scale(0.6);
+        /* Slightly larger than 0.5 for better visibility */
+        transform-origin: center center;
+        /* Keep original dimensions so the scale shrinks it effectively "in place" */
+        width: 640px;
+        height: 440px;
+    }
+
+    /* Reset wrapper scaling since container handles it */
+    .envelope-wrapper {
+        transform: none;
+        pointer-events: auto;
+    }
+
+    /* Adjust modal for small screens */
+    .modal-content {
+        padding: 1.5rem;
+        width: 90%;
+        max-width: 320px;
+    }
+
+    .festive-title {
+        font-size: 1.8rem;
+    }
+
+    .festive-input {
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .festive-button {
+        padding: 10px 30px;
+        font-size: 0.9rem;
+    }
+
+    /* Adjust decorations */
+    .decoration {
+        transform: scale(0.5);
+    }
+
+    .top-left {
+        top: -10px;
+        left: -10px;
+    }
+
+    .top-right {
+        top: -10px;
+        right: -10px;
+    }
+
+    /* Paper message text adjustment */
+    .paper-message h2 {
+        font-size: 1.5rem;
+    }
+
+    .paper-message p {
+        font-size: 1rem;
+    }
+}
+
+/* Background Video */
+#bgVideo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -10;
+    /* Behind everything */
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+    /* Ensure it covers the screen */
+    opacity: 0.4;
+    /* Semi-transparent so the blue gradient shines through */
+    pointer-events: none;
+}

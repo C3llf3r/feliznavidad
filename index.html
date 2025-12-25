@@ -1,1 +1,308 @@
-Feliz Navidad!
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Navidad</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline id="bgVideo">
+        <source src="img/video.mp4" type="video/mp4">
+        Tu navegador no soporta video HTML5.
+    </video>
+
+    <!-- Top Left Decoration -->
+    <div class="decoration top-left">
+        <!-- Gold Star -->
+        <svg class="christmas-icon star-gold" width="50" height="50" viewBox="0 0 24 24" fill="#ffd700"
+            style="top: 20px; left: 20px;">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        <!-- White Snowflake -->
+        <svg class="christmas-icon snowflake-white" width="40" height="40" viewBox="0 0 24 24" fill="none"
+            stroke="white" stroke-width="2" style="top: 60px; left: 50px;">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
+            <path d="M12 2l-3 3m3-3l3 3M12 22l-3-3m3 3l3-3M2 12l3-3m-3 3l3 3M22 12l-3-3m3 3l3 3" />
+        </svg>
+        <!-- Red Small Star/Sparkle -->
+        <svg class="christmas-icon star-red" width="30" height="30" viewBox="0 0 24 24" fill="#ff4444"
+            style="top: 30px; left: 80px;">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+        </svg>
+    </div>
+
+    <!-- Top Right Decoration -->
+    <div class="decoration top-right">
+        <!-- Gold Star -->
+        <svg class="christmas-icon star-gold" width="60" height="60" viewBox="0 0 24 24" fill="#ffd700"
+            style="top: 25px; right: 25px;">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        <!-- Green Snowflake -->
+        <svg class="christmas-icon snowflake-green" width="45" height="45" viewBox="0 0 24 24" fill="none"
+            stroke="#2ecc71" stroke-width="2" style="top: 70px; right: 60px;">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
+            <path d="M12 2l-3 3m3-3l3 3M12 22l-3-3m3 3l3-3M2 12l3-3m-3 3l3 3M22 12l-3-3m3 3l3 3" />
+        </svg>
+        <!-- White Small Sparkle -->
+        <svg class="christmas-icon star-white" width="25" height="25" viewBox="0 0 24 24" fill="white"
+            style="top: 20px; right: 90px;">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+        </svg>
+    </div>
+
+    <!-- Perspective Container -->
+    <div class="perspective-container">
+        <!-- Envelope Wrapper -->
+        <div class="envelope-wrapper" onclick="toggleEnvelope()">
+            <div class="envelope">
+                <div class="envelope-back"></div>
+
+                <!-- The Card (Letter) sits here, centered -->
+                <div class="card-container" id="card">
+                    <div class="frame">
+                        <img src="assets/border.png" alt="Borde Navideño">
+                    </div>
+                    <div class="lights-container" id="lights">
+                        <!-- Lights injected via JS -->
+                    </div>
+                    <div class="content">
+                        <h1>Feliz Navidad</h1>
+                        <p>Que la paz y la alegría<br>llenen tu hogar en estas fiestas.</p>
+                    </div>
+
+                    <!-- Hidden Message Container -->
+                    <div id="secretMessageContainer" class="paper-message" style="display: none;">
+                        <div class="paper-inner-border">
+                            <h2 id="msgTitle">¡Hola!</h2>
+                            <p id="msgBody">Aquí aparecerá tu mensaje especial...</p>
+                            <button id="closeMsgBtn" class="close-msg-btn" onclick="hideMessage()"
+                                style="display:none;">Cerrar Mensaje</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Flaps for 4-way opening -->
+                <div class="flap left"></div>
+                <div class="flap right"></div>
+                <div class="flap bottom"></div>
+                <div class="flap top">
+                    <div class="wax-seal"></div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Close perspective-container -->
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="modal-content glass-effect">
+            <h2 class="festive-title">¡Bienvenido, Amigo Secreto!</h2>
+            <div class="input-group">
+                <input type="text" id="secretFriendName" placeholder="Tu nombre aquí..." class="festive-input">
+                <button onclick="closeModal()" class="festive-button">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to store the name
+        let currentUserName = "";
+
+        // Modal Logic: Check session on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('welcomeModal');
+            // Check if we have already shown the modal in this session
+            if (sessionStorage.getItem('hasVisited')) {
+                modal.style.display = 'none';
+                // Try to recover name from localStorage if exists
+                const storedName = localStorage.getItem('secretSantaName');
+                if (storedName) {
+                    currentUserName = storedName;
+                    console.log("Welcome back, " + currentUserName);
+                    // Update greeting immediately if card is visible (optional, keeping it simple)
+                }
+            }
+        });
+
+        function closeModal() {
+            const modal = document.getElementById('welcomeModal');
+            const nameInput = document.getElementById('secretFriendName');
+            const name = nameInput.value.trim();
+
+            // Validation: Ensure name is not empty
+            if (name === "") {
+                alert("🎄 ¡Por favor, escribe tu nombre para entrar! 🎅");
+                nameInput.style.borderColor = "#ff4444";
+                nameInput.focus();
+                return; // Stop here
+            }
+
+            // Valid name: Save and Close
+            nameInput.style.borderColor = "#ba0011"; // Reset border
+
+            // 1. Save to Global Variable
+            currentUserName = name;
+
+            // 2. Save to localStorage (persists across sessions)
+            localStorage.setItem('secretSantaName', name);
+
+            // 3. Set Session Flag (so it doesn't show again this session)
+            sessionStorage.setItem('hasVisited', 'true');
+
+            // Close Animation
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500);
+        }
+
+        const lightsContainer = document.getElementById('lights');
+        const totalLights = 40; // Total lights around the frame
+
+        // We want to place lights in a rectangle shape inside the container
+        // Coordinates in percentage to be responsive
+        // Path: Top (0,0 -> 100,0), Right (100,0 -> 100,100), Bottom (100,100 -> 0,100), Left (0,100 -> 0,0)
+
+        function createLight(x, y) {
+            const light = document.createElement('div');
+            light.classList.add('light');
+            light.style.left = x + '%';
+            light.style.top = y + '%';
+
+            // Randomize start times for blinking and color cycling to create chaos/randomness
+            // flash is around 1.5s, color-cycle is 4s
+            light.style.animationDelay = `${Math.random() * 2}s, ${Math.random() * 4}s`;
+
+            lightsContainer.appendChild(light);
+        }
+
+        let lightsPerSide = totalLights / 4;
+        let step = 100 / lightsPerSide;
+
+        for (let i = 0; i < lightsPerSide; i++) {
+            // Top edge
+            createLight(i * step, 0);
+            // Right edge
+            createLight(100, i * step);
+            // Bottom edge
+            createLight(100 - i * step, 100);
+            // Left edge
+            createLight(0, 100 - i * step);
+        }
+
+        /* Snow Effect Logic */
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+
+            // Random properties
+            const size = Math.random() * 5 + 2; // 2px to 7px
+            const startLeft = Math.random() * 100; // 0vw to 100vw
+            const duration = Math.random() * 5 + 5; // 5s to 10s
+            const opacity = Math.random() * 0.5 + 0.3; // 0.3 to 0.8
+
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.left = `${startLeft}vw`;
+            snowflake.style.opacity = opacity;
+            snowflake.style.animation = `fall ${duration}s linear`;
+
+            document.body.appendChild(snowflake);
+
+            // Remove after animation to prevent memory leak
+            setTimeout(() => {
+                snowflake.remove();
+            }, duration * 1000);
+        }
+
+        // Create a snowflake every 100ms
+        setInterval(createSnowflake, 100);
+
+        // Christmas Messages Array
+        const xmasMessages = [
+            "¡Feliz Navidad, [NOMBRE_USUARIO]! Que la magia de esta noche ilumine tu camino hacia un año lleno de sueños cumplidos.",
+            "Dicen que el mejor regalo es la amistad, pero un abrazo tuyo tampoco estaría mal. ¡Disfruta mucho, [NOMBRE_USUARIO]!",
+            "¡[NOMBRE_USUARIO]! Espero que encuentres bajo el árbol mucha felicidad, salud y ese regalo que tanto esperabas.",
+            "En esta Navidad, mi deseo para ti, [NOMBRE_USUARIO], es que cada día del próximo año sea tan brillante como las luces que nos rodean.",
+            "¡Felices fiestas, [NOMBRE_USUARIO]! Que el espíritu navideño te llene de energía para conquistar todas tus metas.",
+            "Un brindis por ti, [NOMBRE_USUARIO], porque haces que cada momento sea más especial. ¡Feliz Navidad!",
+            "Que la paz y el amor inunden tu corazón hoy y siempre. ¡Feliz Navidad, [NOMBRE_USUARIO]!"
+        ];
+
+        function toggleEnvelope() {
+            const envelope = document.querySelector('.envelope-wrapper');
+            const isOpen = envelope.classList.contains('open');
+
+            envelope.classList.toggle('open');
+
+            if (!isOpen) {
+                // Using timeout to match the CSS transition of card popping out
+                // Card pops out after 0.5s delay and takes 1s = 1.5s total approx
+                setTimeout(() => {
+                    mostrarMensajeNavideno();
+                }, 1500);
+            } else {
+                hideMessage(); // Ensure it hides if closed manually
+            }
+        }
+
+        function mostrarMensajeNavideno() {
+            const container = document.getElementById('secretMessageContainer');
+            const title = document.getElementById('msgTitle');
+            const body = document.getElementById('msgBody');
+            const closeBtn = document.getElementById('closeMsgBtn');
+
+            // 1. Prepare Content
+            const nameToUse = currentUserName || "Amigo";
+            // Select random message
+            const rawMsg = xmasMessages[Math.floor(Math.random() * xmasMessages.length)];
+            const finalMsg = rawMsg.replace("[NOMBRE_USUARIO]", nameToUse);
+
+            title.innerText = `¡Hola, ${nameToUse}!`;
+            body.innerHTML = ""; // Clear for typewriter
+            closeBtn.style.display = 'none';
+
+            // 2. Show Container (Fade in)
+            container.style.display = 'flex';
+
+            // 3. Typewriter Effect
+            let i = 0;
+            const speed = 50; // ms
+
+            function typeWriter() {
+                if (i < finalMsg.length) {
+                    body.innerHTML += finalMsg.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    // Animation finished, show button
+                    closeBtn.style.display = 'block';
+                    closeBtn.classList.add('fade-in');
+                }
+            }
+
+            typeWriter();
+        }
+
+        function hideMessage() {
+            if (confirm('¿Estás seguro de que quieres cerrar la felicitación navideña?')) {
+                window.close();
+                // Fallback logic for some browsers
+                // window.location.href = "about:blank"; 
+            } else {
+                // Optional: If they cancel, just hide the message internally so they can see the card again? 
+                // For now, doing nothing lets them keep reading. 
+                // To behave as a "Close Message" local button if they cancel closing the app:
+                const container = document.getElementById('secretMessageContainer');
+                container.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
