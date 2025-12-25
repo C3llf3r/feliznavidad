@@ -90,10 +90,11 @@
                 <!-- 4 Flaps for 4-way opening -->
                 <div class="flap left"></div>
                 <div class="flap right"></div>
-                <div class="flap bottom"></div>
+                <div class="flap bottom">
+                    <img src="img/nero.png" class="envelope-logo" alt="Logo">
+                </div>
                 <div class="flap top">
                     <div class="wax-seal"></div>
-                    <img src="img/nero.png" class="envelope-logo" alt="Logo">
                 </div>
             </div>
         </div>
@@ -225,14 +226,21 @@
         setInterval(createSnowflake, 100);
 
         // Christmas Messages Array
-        const xmasMessages = [
-            "¡Feliz Navidad, [NOMBRE_USUARIO]! Que la magia de esta noche ilumine tu camino hacia un año lleno de sueños cumplidos.",
-            "Dicen que el mejor regalo es la amistad, pero un abrazo tuyo tampoco estaría mal. ¡Disfruta mucho, [NOMBRE_USUARIO]!",
-            "¡[NOMBRE_USUARIO]! Espero que encuentres bajo el árbol mucha felicidad, salud y ese regalo que tanto esperabas.",
-            "En esta Navidad, mi deseo para ti, [NOMBRE_USUARIO], es que cada día del próximo año sea tan brillante como las luces que nos rodean.",
-            "¡Felices fiestas, [NOMBRE_USUARIO]! Que el espíritu navideño te llene de energía para conquistar todas tus metas.",
-            "Un brindis por ti, [NOMBRE_USUARIO], porque haces que cada momento sea más especial. ¡Feliz Navidad!",
-            "Que la paz y el amor inunden tu corazón hoy y siempre. ¡Feliz Navidad, [NOMBRE_USUARIO]!"
+        // Christmas Messages Arrays
+        const femaleMessages = [
+            "¡Feliz Navidad, hermosa [NOMBRE_USUARIO]! Que la magia de estas fechas llene tu corazón de amor y dulzura.",
+            "Para ti, [NOMBRE_USUARIO], con todo mi cariño. Que tengas una Navidad tan radiante y especial como tú.",
+            "Te deseo una Navidad llena de momentos mágicos y abrazos sinceros. ¡Te quiero mucho, [NOMBRE_USUARIO]!",
+            "Que esta Navidad te traiga tanta alegría como la que tú das a los demás. ¡Un beso enorme, [NOMBRE_USUARIO]!",
+            "¡Felices fiestas, querida [NOMBRE_USUARIO]! Que el brillo de la Navidad ilumine tus sueños más bonitos."
+        ];
+
+        const maleMessages = [
+            "¡Feliz Navidad, [NOMBRE_USUARIO]! Un brindis por nuestra amistad y por un año lleno de éxitos. ¡Pásalo genial!",
+            "¡Grande, [NOMBRE_USUARIO]! Que disfrutes estas fiestas con buena compañía y mucha alegría. ¡Abrazo fuerte!",
+            "Espero que en esta Navidad disfrutes al máximo, [NOMBRE_USUARIO]. ¡A por un año nuevo legendario!",
+            "¡Felices fiestas, [NOMBRE_USUARIO]! Que no falte la buena comida, la risa y los buenos amigos.",
+            "Un saludo especial para ti, [NOMBRE_USUARIO]. ¡Que tengas una Navidad increíble junto a los tuyos!"
         ];
 
         function toggleEnvelope() {
@@ -261,30 +269,34 @@
             // 1. Prepare Content
             const nameToUse = currentUserName || "Amigo";
 
-            // Gender Detection Logic
-            function getGenderEmoji(name) {
+            // Gender Detection Logic (Returns 'male' or 'female')
+            function detectGender(name) {
                 const lowerName = name.toLowerCase().trim();
                 const maleNames = ["jose", "juan", "carlos", "luis", "pedro", "miguel", "angel", "francisco", "jorge", "fernando", "daniel", "david", "javier", "alejandro", "manuel", "jesús", "antonio", "nerito", "fer", "neritofer"];
                 const femaleNames = ["maria", "ana", "carmen", "laura", "isabel", "lucia", "marta", "elena", "sara", "julia", "paula", "andrea", "rocio", "patricia", "claudia", "sofia", "camila", "valentina"];
 
-                // 1. Check direct list match
-                if (maleNames.includes(lowerName)) return " 🫂 Un fuerte abrazo.";
-                if (femaleNames.includes(lowerName)) return " 😘 Un beso.";
+                if (maleNames.includes(lowerName)) return 'male';
+                if (femaleNames.includes(lowerName)) return 'female';
 
-                // 2. Simple Heuristic for Spanish names
-                // Ends in 'a' is likely female (with exceptions dealt above or ignored for simplicity)
-                // Ends in 'o', 'e', consonant often male
-                if (lowerName.endsWith('a')) {
-                    return " 😘 Un beso.";
-                } else {
-                    return " 🫂 Un fuerte abrazo.";
-                }
+                // Heuristic
+                if (lowerName.endsWith('a')) return 'female';
+                return 'male';
             }
 
-            const emojiSuffix = getGenderEmoji(nameToUse);
+            const gender = detectGender(nameToUse);
+            let selectedArray;
+            let emojiSuffix;
 
-            // Select random message
-            const rawMsg = xmasMessages[Math.floor(Math.random() * xmasMessages.length)];
+            if (gender === 'female') {
+                selectedArray = femaleMessages;
+                emojiSuffix = " 😘 Un beso.";
+            } else {
+                selectedArray = maleMessages;
+                emojiSuffix = " 🫂 Un fuerte abrazo.";
+            }
+
+            // Select random message from the chosen array
+            const rawMsg = selectedArray[Math.floor(Math.random() * selectedArray.length)];
             let finalMsg = rawMsg.replace("[NOMBRE_USUARIO]", nameToUse);
 
             // Add the gender-based suffix

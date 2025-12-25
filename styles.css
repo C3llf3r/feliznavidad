@@ -753,14 +753,22 @@ p {
        We want to position relative to the flap.
        Let's try positioning it absolute "on top" of the border area.
     */
-    top: 20px;
-    /* Lower down */
+    /* Flap.bottom is 0x0 content box at the container's bottom? 
+       No, based on border logic, content box is at the TIP (center of envelope).
+       So we position relative to that tip. 
+    */
+    top: 50px;
+    /* Push down from the tip towards the bottom edge */
     left: 50%;
+    /* Center relative to wrapper left edge (which is 0, but flap is centered?)
+       Actually, if the flap is at left:0 width:0, left:50% is 0. 
+       If previous left:320px made it go right, then origin was centered.
+       So left:0 or left:50% (of 0) is correct for center. */
     transform: translateX(-50%);
     width: 190px;
-    /* Larger size */
     height: auto;
-    z-index: 50;
+    z-index: 100;
+    /* High z-index to be sure */
     filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
     pointer-events: none;
 }
