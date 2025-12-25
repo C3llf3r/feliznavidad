@@ -161,6 +161,10 @@
             // 3. Set Session Flag (so it doesn't show again this session)
             sessionStorage.setItem('hasVisited', 'true');
 
+            // --- TRACKING ---
+            // Envía el nombre a Google Sheets
+            enviarDatosASheets(name);
+
             // Play background music
             const music = document.getElementById('bgMusic');
             music.volume = 0.3; // 30% Volume
@@ -171,6 +175,25 @@
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 500);
+        }
+
+        // --- CONFIGURACIÓN DE GOOGLE SHEETS ---
+        // ⚠️ IMPORTANTE: REEMPLAZA ESTA URL CON LA QUE OBTENGAS EN EL PASO 1
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3nnRqpy3Os4-YzawGOlUpvwpuvo3uhG-FKXTEuwauMd4kesyqUIejyV-cBAAMNTc5Mg/exec";
+
+        function enviarDatosASheets(nombre) {
+
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors", // Importante para evitar errores de CORS con Google Script
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name: nombre, date: new Date().toLocaleString() })
+            })
+                .then(() => console.log("Datos enviados a la hoja"))
+                .catch(err => console.error("Error enviando datos:", err));
         }
 
         const lightsContainer = document.getElementById('lights');
