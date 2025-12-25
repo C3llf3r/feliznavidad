@@ -442,17 +442,19 @@ p {
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.1);
+    background: #ffffff;
     padding: 3rem;
     border-radius: 20px;
     text-align: center;
-    border: 2px solid rgba(255, 215, 0, 0.3);
-    /* Subtle gold border */
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.1);
+    border: 8px solid #ba0011;
+    /* Christmas Red Thick Border */
+    box-shadow: 0 0 30px rgba(186, 0, 17, 0.3), inset 0 0 20px rgba(186, 0, 17, 0.05);
     transform: scale(1);
     animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     max-width: 90%;
     width: 400px;
+    position: relative;
+    /* Add Candy Cane Stripe effect via box shadow or pseudo not needed for simple request */
 }
 
 .glass-effect {
@@ -461,11 +463,12 @@ p {
 }
 
 .festive-title {
-    color: #ffd700;
+    color: #ba0011;
     font-size: 3rem;
     margin-bottom: 2rem;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
     font-weight: normal;
+    font-family: 'Great Vibes', cursive;
 }
 
 .input-group {
@@ -476,14 +479,14 @@ p {
 }
 
 .festive-input {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #ba0011;
+    background: #fff;
+    border: 2px dashed #ba0011;
     padding: 12px 20px;
     border-radius: 50px;
     font-family: 'Great Vibes', cursive;
     /* Keeping theme font */
     font-size: 1.5rem;
-    color: #1a3c6e;
+    color: #ba0011;
     text-align: center;
     outline: none;
     width: 80%;
