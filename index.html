@@ -16,6 +16,11 @@
         Tu navegador no soporta video HTML5.
     </video>
 
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="img/audio.m4a" type="audio/mp4">
+    </audio>
+
     <!-- Top Left Decoration -->
     <div class="decoration top-left">
         <!-- Gold Star -->
@@ -155,6 +160,11 @@
 
             // 3. Set Session Flag (so it doesn't show again this session)
             sessionStorage.setItem('hasVisited', 'true');
+
+            // Play background music
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.3; // 30% Volume
+            music.play().catch(e => console.log("Audio play failed (user interaction needed):", e));
 
             // Close Animation
             modal.style.opacity = '0';
